@@ -16,21 +16,21 @@ class Cell:
 		right_wall: bool = False,
 		bottom_wall: bool = False,
 		color: str = "black",
-		grid_coordinate_x:int = 0,
-		grid_coordinate_y:int = 0,
+		grid_coordinate_x: int = 0,
+		grid_coordinate_y: int = 0,
 	) -> None:
 		"""Initialisation function for the cell class, defining every parameter needed.
 		   A cell has four walls and four corners, a square should be square but this is not a fix requirement.
 
 		Args:
-			top_left (Point): The point at the top left of the cell.
-			bottom_right (Point): The point at the bottom right of the cell.
-			window (Window): The window on which the cell is renderd and or parented to.
-			left_wall (bool): If the cell has a wall to the left.
-			top_wall (bool): If the cell has a wall at the top.
-			right_wall (bool): If the cell has a wall at the right.
-			bottom_wall (bool): If the cell has a wall at the bottom.
-			color (str): The default color the cell is renderd in.
+				top_left (Point): The point at the top left of the cell.
+				bottom_right (Point): The point at the bottom right of the cell.
+				window (Window): The window on which the cell is renderd and or parented to.
+				left_wall (bool): If the cell has a wall to the left.
+				top_wall (bool): If the cell has a wall at the top.
+				right_wall (bool): If the cell has a wall at the right.
+				bottom_wall (bool): If the cell has a wall at the bottom.
+				color (str): The default color the cell is renderd in.
 		"""
 		# Init Walls
 		self.has_left_wall = left_wall
@@ -60,7 +60,9 @@ class Cell:
 			"left": Line(Point(x=self._x1, y=self._y1), Point(x=self._x1, y=self._y2)),
 			"top": Line(Point(x=self._x1, y=self._y1), Point(x=self._x2, y=self._y1)),
 			"right": Line(Point(x=self._x2, y=self._y1), Point(x=self._x2, y=self._y2)),
-			"bottom": Line(Point(x=self._x1, y=self._y2), Point(x=self._x2, y=self._y2))
+			"bottom": Line(
+				Point(x=self._x1, y=self._y2), Point(x=self._x2, y=self._y2)
+			),
 		}
 		for line in lines.values():
 			self._win.draw_line(line, "#d9d9d9")
@@ -94,8 +96,8 @@ class Cell:
 		"""Draws / Undos a move between two cells.
 
 		Args:
-			to_cell (Cell): The destination cell. Self is the current therefroe the startpoint of the draw_move methode.
-			undo (bool): Undoes the Move by coloring the move red (undone).
+				to_cell (Cell): The destination cell. Self is the current therefroe the startpoint of the draw_move methode.
+				undo (bool): Undoes the Move by coloring the move red (undone).
 		"""
 		start_point = Point((self._x1 + self._x2) / 2, (self._y1 + self._y2) / 2)
 		end_point = Point(
