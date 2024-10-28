@@ -39,11 +39,12 @@ class Maze:
 		self._win = win
 		self._x = x1
 		self._y = y1
+		random.seed(entropy)
+
 		self._create_cells()
 		self._break_entrance_and_exit()
 		self._break_walls_r()
-
-		random.seed(entropy)
+		self._reset_cells_visited()
 
 	def get_grid_by_pos(self, x: int, y: int):
 		if x > self.cell_size_x:
@@ -173,4 +174,6 @@ class Maze:
 				choice.grid_coordinate_x, choice.grid_coordinate_y, visited
 			)
 	def _reset_cells_visited(self):
-		pass 
+		for column in self.grid:
+			for cell in column:
+				cell.visited = False
