@@ -1,6 +1,7 @@
 from Window_class import Window
 from Point_class import Point
 from Cell_class import Cell
+from Player_class import Player
 from time import sleep as wait
 import random
 
@@ -20,16 +21,20 @@ class Maze:
 		"""Creates a Maze instance, assumes most of the options, draws the maze and animates it. contains maze lol (List of Lists)
 
 		Args:
-				win (Window): The window / canvas it's drawn on to.
-				x1 (int, optional): Maze start position, X Coordinate. Defaults to 50.
-				y1 (int, optional): Maze start position, Y Coordinate. Defaults to x1.
-				num_rows (int, optional): Number of cell Rows (-). Defaults to 14.
-				num_cols (int, optional): Number of cell Columns (|). Defaults to 10.
-				cell_size_x (int, optional): Pixel Width per cell. Defaults to 50.
-				cell_size_y (int, optional): Pixel Height per cell. Defaults to cell_size_x.
+						win (Window): The window / canvas it's drawn on to.
+						x1 (int, optional): Maze start position, X Coordinate. Defaults to 50.
+						y1 (int, optional): Maze start position, Y Coordinate. Defaults to x1.
+						num_rows (int, optional): Number of cell Rows (-). Defaults to 14.
+						num_cols (int, optional): Number of cell Columns (|). Defaults to 10.
+						cell_size_x (int, optional): Pixel Width per cell. Defaults to 50.
+						cell_size_y (int, optional): Pixel Height per cell. Defaults to cell_size_x.
 		"""
 		self.row_count = num_rows
 		self.column_count = num_cols
+		# another refrence for convinience.
+		self.width = num_rows
+		self.height = num_cols
+
 		self.grid: list[list[Cell]] = []
 		self._cells = self.grid
 
@@ -45,6 +50,7 @@ class Maze:
 		self._break_entrance_and_exit()
 		self._break_walls_r()
 		self._reset_cells_visited()
+		self.sovle()
 
 	def get_grid_by_pos(self, x: int, y: int):
 		if x > self.cell_size_x:
@@ -118,9 +124,9 @@ class Maze:
 	def _break_walls_r(self, current_x=0, current_y=0, visited=None):
 		if visited == None:
 			visited = list()
-		print(
-			f"_break_walls_r(self, current_x={current_x}, current_y={current_y}, visited={visited})"
-		)
+		#print(
+	#		f"_break_walls_r(self, current_x={current_x}, current_y={current_y}, visited={visited})"
+	#	)
 		visited.append(self.grid[current_y][current_x])
 		visited[-1].visited = True
 		while True:
@@ -147,7 +153,7 @@ class Maze:
 			if len(options) == 0:
 				return
 			choice = random.randint(0, len(options) - 1)
-			print(f"Choice = {choice}; len = {len(options)}")
+			#print(f"Choice = {choice}; len = {len(options)}")
 			choice = options[choice]
 
 			# Adjustments for walls between cells:
@@ -173,7 +179,74 @@ class Maze:
 			self._break_walls_r(
 				choice.grid_coordinate_x, choice.grid_coordinate_y, visited
 			)
+
 	def _reset_cells_visited(self):
 		for column in self.grid:
 			for cell in column:
 				cell.visited = False
+
+	def get_cell(self, x: int, y: int):
+		return self.grid[y][x]
+
+	def sovle(self) -> bool:
+		return self._solve_r(x=0, y=0)
+
+	def _solve_r(self, x: int, y: int) -> bool:
+		self._animate()
+		if x == self.width-1 and y == self.height-1:
+			print("S O L V E D")
+			return True
+		self.get_cell(x, y).visited = True
+		possible_moves = []
+
+		# Define potential moves with directions
+		directions = {
+			'up': (x, y - 1),
+			'down': (x, y + 1),
+			'left': (x - 1, y),
+			'right': (x + 1, y)
+		}
+
+		# Check each direction for wall constraints and boundaries
+		for direction, (nx, ny) in directions.items():
+			# Ensure we don't go out of bounds
+			if 0 <= nx < self.width and 0 <= ny < self.height:
+				current_cell = self.get_cell(x,y)
+				new_cell = self.get_cell(nx, ny)
+
+				# Check for walls and visited status if required
+				if direction == 'up' and not current_cell.has_top_wall and not new_cell.has_bottom_wall:
+					if new_cell.visited == False:
+						possible_moves.append(new_cell)
+				elif direction == 'down' and not current_cell.has_bottom_wall and not new_cell.has_top_wall:
+					if new_cell.visited == False:
+						possible_moves.append(new_cell)
+				elif direction == 'left' and not current_cell.has_left_wall and not new_cell.has_right_wall:
+					if new_cell.visited == False:
+						possible_moves.append(new_cell)
+				elif direction == 'right' and not current_cell.has_right_wall and not new_cell.has_left_wall:
+					if new_cell.visited == False:
+						possible_moves.append(new_cell)
+		
+		solved = False
+		for move in possible_moves:
+			self.get_cell(x,y).draw_move(move)
+			if self._solve_r(move.grid_coordinate_x, move.grid_coordinate_y) == True:
+				solved = True
+			else:
+				self.get_cell(x,y).draw_move(move, True)
+		
+		return solved
+			
+		""" niggers do what?
+		direction_solve_occured = False
+		for direction, (nx, ny) in directions.items():
+			if self.get_cell(nx, ny) not in possible_moves:
+				self.get_cell(nx, ny).draw_move(self.get_cell(x, y), True)
+				continue
+			self.get_cell(nx, ny).draw_move(self.get_cell(x, y))
+			if self._solve_r(nx, ny) == True:
+				direction_solve_occured
+		return direction_solve_occured
+		"""
+
