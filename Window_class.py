@@ -3,12 +3,19 @@ from Line_class import Line
 
 class Window:
 	def __init__(self, width, height):
-		self.__root = Tk();
+		self.__root = Tk()
 		self.__root.protocol("WM_DELETE_WINDOW", self.close)
-		self.__root.title = "test"
-		self.canvas = Canvas(master=self.__root)
+		self.__root.title("test")
+		
+		# Set the width and height for the main window
+		self.__root.geometry(f"{width}x{height}")
+		
+		# Initialize the canvas with the same width and height
+		self.canvas = Canvas(master=self.__root, width=width, height=height)
+		
 		self.window_running = False
-		self.canvas.pack(expand=1,fill=BOTH)
+		self.canvas.pack(expand=1, fill=BOTH)
+
 	def redraw(self):
 		self.__root.update_idletasks()
 		self.__root.update()
